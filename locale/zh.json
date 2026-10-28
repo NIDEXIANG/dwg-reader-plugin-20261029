@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "DWG 读取器",
+    "description": "基于 libredwg-web（WASM）直接解析 AutoCAD DWG 图纸：版本、图层、块、实体统计与明细，可选导出 SVG 预览。"
+  }
+}

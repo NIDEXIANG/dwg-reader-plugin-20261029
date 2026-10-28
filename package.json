@@ -1,0 +1,35 @@
+{
+  "name": "@bill_nee/dwg-reader",
+  "version": "1.1.0",
+  "description": "直接读取 AutoCAD DWG 图纸的 DSH 插件（基于 libredwg-web 0.8.2 WASM，GPL-3.0）。",
+  "license": "GPL-3.0-only",
+  "author": "MEB 工程造价项目助手 <meb@example.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NIDEXIANG/dwg-reader-plugin-20261029.git"
+  },
+  "keywords": ["dwg", "dwg-reader", "autocad", "cad", "dsh-plugin", "libredwg", "wasm"],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "lib/index.js",
+    "vendor",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "LICENSE",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

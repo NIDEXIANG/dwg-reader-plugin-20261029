@@ -1,0 +1,3 @@
+- insert:
+    - id: dwg-reader
+      name: '@bill_nee/dwg-reader'

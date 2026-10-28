@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "DWG Reader",
+    "description": "Parses AutoCAD DWG drawings directly via libredwg-web (WASM): version, layers, blocks, entity stats/details, optional SVG preview export."
+  }
+}
