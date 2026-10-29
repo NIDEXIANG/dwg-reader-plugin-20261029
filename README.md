@@ -1,18 +1,42 @@
 # @bill_nee/dwg-reader
 
-DSH（DeepSeek Harness）插件：可直接读取 AutoCAD DWG 格式图纸，无需安装 AutoCAD。
+DSH（DeepSeek Harness）插件：直接读取 DWG/DXF 图纸、PDF 与图片/截屏，无需安装 AutoCAD、Tesseract 等外部软件。
 
-基于 [libredwg-web](https://github.com/mlightcad/libredwg-web) 0.8.2 WASM 编译，在浏览器/Node 环境中解析 DWG 文件，返回图层、实体、版本、编码、图幅等信息，并可导出 SVG 预览。
+基于 [libredwg-web](https://github.com/mlightcad/libredwg-web) 0.8.2 WASM 解析 DWG；DXF 经 Python ezdxf 桥接；PDF 用 pdf-parse；图片 OCR 使用内置 **tesseract.js（WASM）**，语言包可指向本地 tessdata，也可按需联网下载，支持 Tesseract 全量语言（100+ 种）。
 
 ## 安装
 
 在 DSH 工作台或终端执行：
 
 ```powershell
-dsh plugin --profile desktop add @bill_nee/dwg-reader@1.1.0
+dsh plugin --profile desktop add @bill_nee/dwg-reader@1.5.0
 ```
 
-安装后在 DSH 工作台插件管理中启用插件，即可使用 `read_dwg` 工具读取 DWG 图纸。
+安装后在 DSH 工作台插件管理中启用插件，即可使用 `read_dwg`、`read_dxf`、`read_pdf`、`ocr_image` 四个工具（`read_image` 为 DSH 内置看图工具，本插件用 `ocr_image` 与其并存，避免同名冲突）。
+
+## 工具与参数
+
+| 工具 | 说明 |
+|------|------|
+| `read_dwg` | 解析 DWG：版本/代码页/图层/块/实体统计与明细，可导出 SVG 预览 |
+| `read_dxf` | 解析 DXF（ezdxf 桥接）：版本、图层、块、实体统计与明细 |
+| `read_pdf` | 解析 PDF：页数、元数据、可选全文文本 |
+| `ocr_image` | 图片/截屏 OCR：格式、像素尺寸、颜色模式 + 识别文字（PNG/JPEG/WebP/BMP/GIF/TIFF） |
+
+`ocr_image` 关键参数：
+
+```json
+{
+  "file_path": "F:\\HAYNESS 工作区1\\测试用资源\\截屏.png",
+  "ocr": true,
+  "lang": "chi_sim+eng",
+  "tessdata_prefix": "D:\\Tools\\Tesseract-OCR\\tessdata"
+}
+```
+
+- `lang`：Tesseract 语言码，`+` 或逗号连接，默认 `chi_sim+eng`；如 `eng`、`chi_tra`、`jpn`、`kor`、`deu`、`fra`、`rus`、`spa`、`ara`、`vie`、`tha` 等。
+- `tessdata_prefix`：本地 traineddata 目录。提供后只读本地语言包、不联网；目录缺包会报错并列出缺项。
+- 未提供 `tessdata_prefix` 时，依次探测 `TESSDATA_PREFIX` 环境变量、`D:\Tools\Tesseract-OCR\tessdata`、`C:\Program Files\Tesseract-OCR\tessdata`、`/usr/share/tesseract-ocr/4.00/tessdata` 等常见目录；均未命中才联网下载并缓存到系统临时目录。
 
 ## 主要能力
 
@@ -21,15 +45,14 @@ dsh plugin --profile desktop add @bill_nee/dwg-reader@1.1.0
 | 读取 DWG | 支持 AutoCAD R14~R2018 等常见版本（AC1015~AC1032） |
 | 图层信息 | 返回所有图层名称、颜色、冻结/关闭/锁定状态 |
 | 实体统计 | 返回实体总数及按类型（LINE/TEXT/INSERT/HATCH/DIMENSION 等）分类统计 |
-| 图纸版本 | 返回 ACADVER、版本号、版本描述（如 r2018/AC1032/AutoCAD Release 2018） |
-| 代码页 | 返回 DWG 代码页（如 CP_ANSI_936） |
+| INSERT 明细 | 返回块名、插入点、旋转、缩放及块属性（tag/text/value） |
+| 图纸版本 | 返回 ACADVER、版本号、版本描述（如 r2007/AC1021） |
 | 图幅信息 | 返回 EXTMIN/EXTMAX 边界框 |
 | 导出 SVG | 可将 DWG 内容导出为 SVG 预览文件到指定路径 |
-| 错误处理 | 对无效/损坏/非 DWG 文件给出明确错误提示 |
+| 内置 OCR | tesseract.js WASM，无需安装 Tesseract 可执行文件；多语言、可离线 |
+| 错误处理 | 对无效/损坏/非目标格式文件给出明确错误提示 |
 
 ## 使用示例
-
-在 DSH 工作台调用 `read_dwg` 工具：
 
 ```json
 {
@@ -41,41 +64,19 @@ dsh plugin --profile desktop add @bill_nee/dwg-reader@1.1.0
 }
 ```
 
-返回示例：
-
-```json
-{
-  "file_path": "E:\\...\\02 HVAC DESIGN PLAN.dwg",
-  "file_size": 123456,
-  "version": { "type": "r2018", "hdr": "AC1032", "description": "AutoCAD Release 2018", "version": 33 },
-  "codepage": 39,
-  "codepageName": "CP_ANSI_936",
-  "layer_count": 126,
-  "entity_count": 1514,
-  "unknown_entity_count": 0,
-  "extents": { "min": { "x": 0, "y": 0, "z": 0 }, "max": { "x": 266000, "y": 286000, "z": 0 } },
-  "layers": [ { "name": "HEPA BOX", "colorIndex": 5, ... }, ... ],
-  "entities": [
-    { "type": "INSERT", "handle": "...", "layer": "HEPA BOX", "blockName": "...", ... },
-    ...
-  ],
-  "svg_path": "F:\\HAYNESS 工作区1\\hvac-plan.svg"
-}
-```
-
 ## 测试实例
 
-已对真实工程图纸进行验证：
-
-- **天喔蜜饯工厂暖通图纸**（r2018/AC1032）：1514 个实体，126 个图层，其中高效送风口（HEPA BOX 图层）108 个，方形散流器 18 个，射流空调 5 个。
-- **植本清源空调设备图**（r2007/AC1021）：1762 个实体，14 个图层。
+- **天喔蜜饯工厂暖通图纸**（r2018/AC1032）：1514 个实体、126 个图层。
+- **植本清源空调设备图**（r2007/AC1021）：1762 个实体、14 个图层。
+- **截屏 OCR**：本地 tessdata（chi_sim+eng）约 4 秒识别 4500+ 字符；`ocr=false` 仅解析尺寸不识别。
 - **无效/损坏文件**：返回明确错误，不崩溃。
 
 ## 文件结构
 
 ```
 dwg-reader-plugin/
-├── lib/index.js          # 插件入口，注册 read_dwg 工具
+├── lib/index.js          # 插件入口，注册 read_dwg / read_dxf / read_pdf / ocr_image
+├── scripts/read_dxf.py   # DXF 解析桥接（ezdxf）
 ├── cordis.patch.yml      # DSH bundle 插件清单
 ├── package.json          # npm 包清单
 ├── LICENSE               # GPL-3.0-only
@@ -90,10 +91,10 @@ dwg-reader-plugin/
 
 ## 许可
 
-GPL-3.0-only。依赖 libredwg-web 同样为 GPL，公开分发请保留 LICENSE 并提供对应源码。
+GPL-3.0-only。依赖 libredwg-web 为 GPL，tesseract.js 为 Apache-2.0；公开分发请保留 LICENSE 并提供对应源码。
 
 ## 安装路径
 
-- npm 公开包：`@bill_nee/dwg-reader@1.1.0`
-- 安装命令：`dsh plugin --profile desktop add @bill_nee/dwg-reader@1.1.0`
+- npm 公开包：`@bill_nee/dwg-reader@1.5.0`
+- 安装命令：`dsh plugin --profile desktop add @bill_nee/dwg-reader@1.5.0`
 - GitHub 源码：https://github.com/NIDEXIANG/dwg-reader-plugin-20261029
