@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "DWG 读取器",
-    "description": "基于 libredwg-web（WASM）直接解析 AutoCAD DWG 图纸：版本、图层、块、实体统计与明细，可选导出 SVG 预览。"
+    "description": "直接解析 AutoCAD DWG/DXF 图纸、PDF 与图片：DWG 基于 libredwg-web（WASM）；DXF 经 Python ezdxf 桥接（需本机已装 Python 与 ezdxf）；PDF 用 pdf-parse；图片用内置 tesseract.js OCR，支持本地 tessdata 多语言。"
   }
 }
