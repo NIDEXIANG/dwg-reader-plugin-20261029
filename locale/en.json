@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "DWG Reader",
-    "description": "Parses AutoCAD DWG drawings directly via libredwg-web (WASM): version, layers, blocks, entity stats/details, optional SVG preview export."
+    "description": "Reads AutoCAD DWG/DXF drawings, PDF files and images: DWG via libredwg-web (WASM); DXF via a Python ezdxf bridge (requires local Python + ezdxf); PDF via pdf-parse; images via built-in tesseract.js OCR with local tessdata support."
   }
 }
