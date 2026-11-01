@@ -9,7 +9,7 @@ DSH（DeepSeek Harness）插件：直接读取 DWG/DXF 图纸、PDF 与图片/�
 在 DSH 工作台或终端执行：
 
 ```powershell
-dsh plugin --profile desktop add @bill_nee/dwg-reader@1.5.0
+dsh plugin --profile desktop add @bill_nee/dwg-reader@1.5.2
 ```
 
 安装后在 DSH 工作台插件管理中启用插件，即可使用 `read_dwg`、`read_dxf`、`read_pdf`、`ocr_image` 四个工具（`read_image` 为 DSH 内置看图工具，本插件用 `ocr_image` 与其并存，避免同名冲突）。
@@ -19,7 +19,7 @@ dsh plugin --profile desktop add @bill_nee/dwg-reader@1.5.0
 | 工具 | 说明 |
 |------|------|
 | `read_dwg` | 解析 DWG：版本/代码页/图层/块/实体统计与明细，可导出 SVG 预览 |
-| `read_dxf` | 解析 DXF（ezdxf 桥接）：版本、图层、块、实体统计与明细 |
+| `read_dxf` | 解析 DXF（ezdxf 桥接）：版本、图层、块、实体统计与明细（**需本机已安装 Python 与 ezdxf**） |
 | `read_pdf` | 解析 PDF：页数、元数据、可选全文文本 |
 | `ocr_image` | 图片/截屏 OCR：格式、像素尺寸、颜色模式 + 识别文字（PNG/JPEG/WebP/BMP/GIF/TIFF） |
 
@@ -51,6 +51,11 @@ dsh plugin --profile desktop add @bill_nee/dwg-reader@1.5.0
 | 导出 SVG | 可将 DWG 内容导出为 SVG 预览文件到指定路径 |
 | 内置 OCR | tesseract.js WASM，无需安装 Tesseract 可执行文件；多语言、可离线 |
 | 错误处理 | 对无效/损坏/非目标格式文件给出明确错误提示 |
+
+## 前置依赖（重要）
+
+- **DWG / PDF / 图片 OCR**：纯 JavaScript + WASM，无需安装 AutoCAD 或 Tesseract，直接可用。
+- **DXF**：基于 Python ezdxf 桥接，**需本机已安装 Python 3 与 `ezdxf` 包**。Python 解释器优先读环境变量 `DXF_PYTHON_EXE`，其次 `DSH_HOME\dsh-runtimes\dsh-primary-runtime\dependencies\python\python.exe`，再次回退系统 `python`。缺少 `ezdxf` 时会给明确报错，请先 `pip install ezdxf`。
 
 ## 使用示例
 
@@ -95,6 +100,6 @@ GPL-3.0-only。依赖 libredwg-web 为 GPL，tesseract.js 为 Apache-2.0；公�
 
 ## 安装路径
 
-- npm 公开包：`@bill_nee/dwg-reader@1.5.0`
-- 安装命令：`dsh plugin --profile desktop add @bill_nee/dwg-reader@1.5.0`
+- npm 公开包：`@bill_nee/dwg-reader@1.5.2`
+- 安装命令：`dsh plugin --profile desktop add @bill_nee/dwg-reader@1.5.2`
 - GitHub 源码：https://github.com/NIDEXIANG/dwg-reader-plugin-20261029
