@@ -1,7 +1,7 @@
 {
   "name": "@bill_nee/dwg-reader",
-  "version": "1.5.1",
-  "description": "直接读取 AutoCAD DWG/DXF、PDF 与图片/截屏的 DSH 插件（DWG 基于 libredwg-web 0.8.2 WASM，DXF 基于 Python ezdxf 桥接，PDF 基于 pdf-parse，图片基于内置 tesseract.js WASM OCR，支持本地 tessdata 多语言，GPL-3.0）。",
+  "version": "1.5.2",
+  "description": "直接读取 AutoCAD DWG/DXF、PDF 与图片/截屏的 DSH 插件（DWG 基于 libredwg-web 0.8.2 WASM，DXF 基于 Python ezdxf 桥接，**需本机已安装 Python 与 ezdxf**，PDF 基于 pdf-parse，图片基于内置 tesseract.js WASM OCR，支持本地 tessdata 多语言，GPL-3.0）。",
   "license": "GPL-3.0-only",
   "author": "MEB 工程造价项目助手 <meb@example.com>",
   "repository": {
